@@ -31,6 +31,8 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "base16", "~> 0.0.2"
   spec.add_dependency "faraday", ">= 0.9.2", "< 3"
+  spec.add_dependency "em-http-request"
+  spec.add_dependency "faraday-em_http", "~> 1.0.0"
 
   spec.add_development_dependency "appraisal", "~> 2.4"
 

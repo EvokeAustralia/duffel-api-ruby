@@ -22,7 +22,7 @@ module DuffelAPI
         sleep_until_ratelimit_reset if rate_limited?
 
         app.call(env).tap do |response|
-          headers = response.env.response_headers
+          headers = response.headers
 
           RateLimiter.mutex.synchronize do
             RateLimiter.ratelimit_limit = new_ratelimit_limit(headers)

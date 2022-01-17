@@ -53,7 +53,7 @@ describe DuffelAPI::Services::SeatMapsService do
       expect(api_response).to be_a(DuffelAPI::APIResponse)
 
       expect(api_response.body).to be_a(String)
-      expect(api_response.headers).to eq(response_headers)
+      expect(api_response.headers).to include(response_headers)
       expect(api_response.request_id).to eq(response_headers["x-request-id"])
       expect(api_response.status_code).to eq(200)
     end

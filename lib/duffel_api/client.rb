@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
+require "forwardable"
+
 module DuffelAPI
   # A client for accessing the Duffel API, configured with a provided access token and
   # base URL, which provides access to API services
   class Client
+    extend Forwardable
+
     API_VERSION = "beta"
 
     # Sets up the client with your access token
@@ -14,6 +18,8 @@ module DuffelAPI
     def initialize(access_token:, base_url: "https://api.duffel.com")
       @api_service = APIService.new(base_url, access_token, **default_options)
     end
+
+    def_delegators :@api_service, :in_parallel
 
     # @return [Services::AircraftService]
     def aircraft

@@ -50,6 +50,28 @@ describe DuffelAPI::APIService do
     end
   end
 
+  describe "making a GET request with query parameters 2" do
+    it "executes two simple requests" do
+      stub_1 = stub_request(:get, "https://api.duffel.com/air/offers").
+        with(query: { "a" => 1, "b" => 2 }).
+        to_return(response)
+
+      stub_2 = stub_request(:get, "https://api.duffel.com/air/offers").
+        with(query: { "a" => 3, "b" => 4 }).
+        to_return(response)
+
+      responses = []
+      service.in_parallel do
+        responses.push(service.make_request(:get, "/air/offers", params: { a: 1, b: 2 }))
+        responses.push(service.make_request(:get, "/air/offers", params: { a: 3, b: 4 }))
+      end
+
+      expect(stub_1).to have_been_requested
+      expect(stub_2).to have_been_requested
+      expect(responses.count).to eq(2)
+    end
+  end
+
   describe "making a POST request with some data" do
     it "passes the data in the body" do
       stub = stub_request(:post, "https://api.duffel.com/air/offer_requests").

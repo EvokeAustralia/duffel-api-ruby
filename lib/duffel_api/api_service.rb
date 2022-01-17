@@ -1,12 +1,18 @@
 # frozen_string_literal: true
 
 require "faraday"
+require "patches/dependency_loader"
+require "faraday/em_http"
 require "uri"
+require 'forwardable'
 
 module DuffelAPI
   # An internal class used within the library that is able to make requests to
   # the Duffel API and handle errors
   class APIService
+
+    extend Forwardable
+
     # Sets up an API service based on a base URL, access token and set of default
     # headers
     #
@@ -22,13 +28,15 @@ module DuffelAPI
         faraday.request :rate_limiter
         faraday.response :raise_duffel_errors
 
-        faraday.adapter(:net_http)
+        faraday.adapter :em_http
       end
 
       @headers = default_headers.merge("Authorization" => "Bearer #{access_token}")
     end
 
-    # Makes a request to the API, including any defauot headers
+    def_delegators :@connection, :in_parallel
+
+    # Makes a request to the API, including any default headers
     #
     # @param method [Symbol] the HTTP method to make the request with
     # @param path [String] the path to make the request to
@@ -41,6 +49,10 @@ module DuffelAPI
       options[:headers] = @headers.merge(options[:headers])
       Request.new(@connection, method, @path_prefix + path, **options).call
     end
+
+    # def in_parallel(&block)
+    #   @connection.in_parallel(&block)
+    # end
 
     private
 
